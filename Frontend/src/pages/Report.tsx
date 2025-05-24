@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle, Camera, MapPin, FileText } from "lucide-react";
@@ -7,8 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 const GEOAPIFY_API_KEY = "dcaea7ec4f5a47be8900cd8c7b627153";
+
+// Default position is null
+const DEFAULT_POSITION = null;
 
 async function reverseGeocode(lat: number, lon: number): Promise<string> {
   try {
@@ -28,35 +33,109 @@ async function reverseGeocode(lat: number, lon: number): Promise<string> {
 const Report = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [reportData, setReportData] = useState({
+  const [formData, setFormData] = useState({
     description: "",
+    image: null,
     location: "",
-    image: null as File | null
   });
+  const [position, setPosition] = useState(DEFAULT_POSITION);
+  const mapContainerRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markerRef = useRef(null);
+  const [address, setAddress] = useState("");
+  const [coords, setCoords] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize map
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+    if (!mapInstanceRef.current && position) {
+      // Fix marker icon issue
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      });
+
+      mapInstanceRef.current = L.map(mapContainerRef.current).setView(position, 16);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(mapInstanceRef.current);
+
+      markerRef.current = L.marker(position).addTo(mapInstanceRef.current);
+
+      mapInstanceRef.current.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        setPosition([lat, lng]);
+      });
+    }
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [position]);
+
+  // Update marker and view when position changes
+  useEffect(() => {
+    if (position && mapInstanceRef.current && markerRef.current) {
+      markerRef.current.setLatLng(position);
+      mapInstanceRef.current.setView(position);
+    }
+    if (position) {
+      setCoords(position);
+      setIsLoading(true);
+      reverseGeocode(position[0], position[1]).then(addr => {
+        setAddress(addr);
+        setIsLoading(false);
+      });
+    }
+  }, [position]);
+
+  // Update formData when address changes
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      location: address
+    }));
+  }, [address]);
+
+  // Handle manual input
+  const handleLocationChange = (e) => {
+    const [lat, lng] = e.target.value.split(',').map(Number);
+    if (!isNaN(lat) && !isNaN(lng)) setPosition([lat, lng]);
+  };
+
+  // Use My Location
+  const handleFetchLocation = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setPosition([pos.coords.latitude, pos.coords.longitude]);
+      }
+    );
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Report Data:", reportData);
-    
     // Store report in localStorage for demo purposes
     const existingReports = JSON.parse(localStorage.getItem('reports') || '[]');
     const newReport = {
       id: Date.now(),
-      description: reportData.description,
-      location: reportData.location,
-      image: reportData.image?.name || null,
+      description: formData.description,
+      location: formData.location,
+      image: formData.image?.name || null,
       date: new Date().toISOString(),
       status: "Submitted"
     };
-    
     existingReports.push(newReport);
     localStorage.setItem('reports', JSON.stringify(existingReports));
-    
     toast({
       title: "Report Submitted Successfully!",
       description: "Your emergency report has been sent to nearby NGOs. Help is on the way.",
     });
-    
     setTimeout(() => {
       navigate("/my-reports");
     }, 2000);
@@ -64,46 +143,14 @@ const Report = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.type === 'file') {
-      setReportData({
-        ...reportData,
+      setFormData({
+        ...formData,
         image: e.target.files?.[0] || null
       });
     } else {
-      setReportData({
-        ...reportData,
+      setFormData({
+        ...formData,
         [e.target.name]: e.target.value
-      });
-    }
-  };
-
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          const address = await reverseGeocode(latitude, longitude);
-          setReportData({
-            ...reportData,
-            location: address
-          });
-          toast({
-            title: "Location Detected",
-            description: "Your current address has been added to the report.",
-          });
-        },
-        (error) => {
-          toast({
-            title: "Location Error",
-            description: "Unable to get your location. Please enter it manually.",
-            variant: "destructive",
-          });
-        }
-      );
-    } else {
-      toast({
-        title: "Geolocation Not Supported",
-        description: "Please enter your location manually.",
-        variant: "destructive",
       });
     }
   };
@@ -136,7 +183,7 @@ const Report = () => {
                   <Input
                     id="description"
                     name="description"
-                    value={reportData.description}
+                    value={formData.description}
                     onChange={handleChange}
                     placeholder="Describe the emergency situation in detail..."
                     required
@@ -167,15 +214,15 @@ const Report = () => {
                     <Input
                       id="location"
                       name="location"
-                      value={reportData.location}
-                      onChange={handleChange}
+                      value={address}
+                      onChange={handleLocationChange}
                       placeholder="Enter location or coordinates"
                       required
                       className="flex-1"
                     />
                     <Button
                       type="button"
-                      onClick={getCurrentLocation}
+                      onClick={handleFetchLocation}
                       variant="outline"
                       className="px-3"
                     >
@@ -185,6 +232,20 @@ const Report = () => {
                   <p className="text-sm text-gray-500">
                     Click the location icon to auto-detect your current location
                   </p>
+                </div>
+
+                <div className="w-full flex justify-center mt-2 mb-2">
+                  <div className="w-full max-w-2xl rounded-xl overflow-hidden border border-gray-300 shadow-md bg-white relative">
+                    {isLoading && (
+                      <div className="flex items-center justify-center h-[350px] w-full bg-gray-50 absolute z-10 bg-opacity-80">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                      </div>
+                    )}
+                    <div
+                      ref={mapContainerRef}
+                      style={{ height: 350, width: "100%" }}
+                    />
+                  </div>
                 </div>
 
                 <Button 
