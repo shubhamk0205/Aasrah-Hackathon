@@ -1,27 +1,63 @@
-
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { AlertTriangle, Heart, FileText, TrendingUp, Users, DollarSign } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { AlertTriangle, Heart, FileText, TrendingUp, DollarSign, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { logout } from "@/store/slices/userSlice";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { toast } = useToast();
+  const { currentUser } = useAppSelector((state) => state.user);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    toast({
+      title: "Logged Out Successfully",
+      description: "You have been logged out. Redirecting...",
+    });
+    setTimeout(() => {
+      navigate("/");
+    }, 1500);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 py-12 px-4">
       <div className="container mx-auto max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Welcome, User! 👋
-          </h1>
-          <p className="text-xl text-gray-600">
-            Your Dashboard - Manage emergencies, track donations, and make a difference
-          </p>
-        </motion.div>
+        {/* Header with Logout Button */}
+        <div className="flex justify-between items-center mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-left"
+          >
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+              Welcome, {currentUser?.fullName || 'User'}! 👋
+            </h1>
+            <p className="text-xl text-gray-600">
+              Your Dashboard - Manage emergencies, track donations, and make a difference
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
+          </motion.div>
+        </div>
 
         {/* Stats Section */}
         <div className="grid md:grid-cols-2 gap-6 mb-12">
