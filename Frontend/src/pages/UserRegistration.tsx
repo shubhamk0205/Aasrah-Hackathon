@@ -4,10 +4,33 @@ import { UserPlus, ArrowLeft, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 
 const UserRegistration = () => {
   const [isLogin, setIsLogin] = useState(false);
+  
+  // Form state variables
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [retypePassword, setRetypePassword] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isLogin) {
+      // Handle login logic
+      console.log("Login with:", { email, password });
+    } else {
+      // Validate passwords match
+      if (password !== retypePassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+      // Handle registration logic
+      console.log("Register with:", { fullName, email, password, phone });
+    }
+  };
 
   // Conifiguring firebase for login and signup users
 
@@ -46,7 +69,7 @@ const UserRegistration = () => {
           </div>
 
           {/* Registration/Login Form */}
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="fullName" className="text-gray-700 font-medium">
@@ -58,6 +81,8 @@ const UserRegistration = () => {
                   placeholder="Enter your full name"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
                   required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                 />
               </div>
             )}
@@ -72,6 +97,8 @@ const UserRegistration = () => {
                 placeholder="your.email@example.com"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -86,10 +113,42 @@ const UserRegistration = () => {
                   placeholder="Enter your password"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
             ) : (
               <>
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-gray-700 font-medium">
+                    Password <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Create your password"
+                    className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="retypePassword" className="text-gray-700 font-medium">
+                    Retype Password <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="retypePassword"
+                    type="password"
+                    placeholder="Retype your password"
+                    className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    required
+                    value={retypePassword}
+                    onChange={(e) => setRetypePassword(e.target.value)}
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-gray-700 font-medium">
                     Phone Number <span className="text-red-500">*</span>
@@ -100,18 +159,8 @@ const UserRegistration = () => {
                     placeholder="+1 (555) 123-4567"
                     className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
                     required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="emergency" className="text-gray-700 font-medium">
-                    Emergency Contact
-                  </Label>
-                  <Input
-                    id="emergency"
-                    type="tel"
-                    placeholder="Emergency contact number"
-                    className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
               </>
@@ -127,7 +176,15 @@ const UserRegistration = () => {
             <div className="text-center mt-6">
               <button
                 type="button"
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  // Reset form fields when switching between login and register
+                  setFullName("");
+                  setEmail("");
+                  setPassword("");
+                  setRetypePassword("");
+                  setPhone("");
+                }}
                 className="text-green-600 hover:text-green-700 font-medium transition-colors"
               >
                 {isLogin ? "Don't have an account? Register" : "Already have an account? Log In"}
