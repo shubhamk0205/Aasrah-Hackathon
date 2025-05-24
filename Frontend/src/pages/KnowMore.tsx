@@ -39,8 +39,9 @@ const KnowMore = () => {
             className="text-4xl md:text-5xl font-bold text-center mb-8"
           >
             Building a{" "}
-            <span className="text-blue-600">Safer</span>{" "}
-            <span className="text-orange-600">World</span>
+            <span className="inline-flex">
+              <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-transparent bg-clip-text">Safer World</span>
+            </span>
           </motion.h1>
 
           {/* Mission Statement */}
