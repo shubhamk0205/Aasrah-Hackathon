@@ -1,15 +1,19 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserPlus, ArrowLeft, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { loginStart, loginSuccess, loginFailure } from "@/store/slices/userSlice";
 
 const UserRegistration = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const dispatch = useAppDispatch();
+  const { loading, error, isAuthenticated, currentUser } = useAppSelector((state) => state.user);
   const [isLogin, setIsLogin] = useState(false);
   
   // Form state variables
@@ -19,44 +23,68 @@ const UserRegistration = () => {
   const [retypePassword, setRetypePassword] = useState("");
   const [phone, setPhone] = useState("");
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // If user is already authenticated, redirect to dashboard
+  if (isAuthenticated && currentUser) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isLogin) {
-      // Handle login logic
-      console.log("Login with:", { email, password });
-      // For demo purposes, always allow login
-      toast({
-        title: "Login Successful!",
-        description: "Welcome back! Redirecting to dashboard...",
-      });
-      
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 2000);
-    } else {
-      // Validate passwords match
-      if (password !== retypePassword) {
+    dispatch(loginStart());
+
+    try {
+      if (isLogin) {
+        // Handle login logic
+        console.log("Login with:", { email, password });
+        // For demo purposes, always allow login
+        dispatch(loginSuccess({
+          email,
+          role: 'user'
+        }));
+        
         toast({
-          title: "Registration Failed",
-          description: "Passwords do not match!",
-          variant: "destructive",
+          title: "Login Successful!",
+          description: "Welcome back! Redirecting to dashboard...",
         });
-        return;
+      } else {
+        // Validate passwords match
+        if (password !== retypePassword) {
+          dispatch(loginFailure("Passwords do not match!"));
+          toast({
+            title: "Registration Failed",
+            description: "Passwords do not match!",
+            variant: "destructive",
+          });
+          return;
+        }
+        // Handle registration logic
+        console.log("Register with:", { fullName, email, password, phone });
+        dispatch(loginSuccess({
+          fullName,
+          email,
+          phone,
+          role: 'user'
+        }));
+        
+        toast({
+          title: "Registration Successful!",
+          description: "Welcome to our platform! Redirecting to dashboard...",
+        });
       }
-      // Handle registration logic
-      console.log("Register with:", { fullName, email, password, phone });
-      toast({
-        title: "Registration Successful!",
-        description: "Welcome to our platform! Redirecting to dashboard...",
-      });
       
+      // Navigate after successful login/registration
       setTimeout(() => {
         navigate("/dashboard");
       }, 2000);
+    } catch (error) {
+      dispatch(loginFailure(error instanceof Error ? error.message : "An error occurred"));
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
     }
   };
-
-  // Conifiguring firebase for login and signup users
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 px-4 py-8">
@@ -126,38 +154,23 @@ const UserRegistration = () => {
               />
             </div>
 
-            {isLogin ? (
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-medium">
-                  Password <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-700 font-medium">
-                    Password <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Create your password"
-                    className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700 font-medium">
+                Password <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder={isLogin ? "Enter your password" : "Create your password"}
+                className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
+            {!isLogin && (
+              <>
                 <div className="space-y-2">
                   <Label htmlFor="retypePassword" className="text-gray-700 font-medium">
                     Retype Password <span className="text-red-500">*</span>
@@ -193,9 +206,16 @@ const UserRegistration = () => {
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              disabled={loading}
             >
-              {isLogin ? "Log In" : "Register Now"}
+              {loading ? "Processing..." : (isLogin ? "Log In" : "Register Now")}
             </Button>
+
+            {error && (
+              <div className="text-red-500 text-center text-sm">
+                {error}
+              </div>
+            )}
 
             <div className="text-center mt-6">
               <button
