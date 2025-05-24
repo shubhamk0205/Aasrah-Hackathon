@@ -5,39 +5,63 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, FormEvent } from "react";
+import {  createUserWithEmailAndPassword , signInWithEmailAndPassword } from "firebase/auth";
+import {auth} from '../database/FirebaseConfig'
 
 const UserRegistration = () => {
   const [isLogin, setIsLogin] = useState(false);
-  
+
   // Form state variables
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [retypePassword, setRetypePassword] = useState("");
   const [phone, setPhone] = useState("");
+ 
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isLogin) {
-      // Handle login logic
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        console.log("User logged in:", userCredential.user);
+        alert("Logged in successfully!");
+      } catch (error) {
+        console.log("Error in login", error);
+      }
       console.log("Login with:", { email, password });
     } else {
-      // Validate passwords match
       if (password !== retypePassword) {
         alert("Passwords do not match!");
         return;
       }
-      // Handle registration logic
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        console.log("User registered:", userCredential.user);
+        alert("Registered successfully!");
+      } catch (error) {
+        console.log("Error in signup", error);
+      }
       console.log("Register with:", { fullName, email, password, phone });
     }
   };
 
-  // Conifiguring firebase for login and signup users
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 px-4 py-8">
       {/* Back Button */}
-      <Link to="/" className="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-8 transition-colors">
+      <Link
+        to="/"
+        className="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-8 transition-colors"
+      >
         <ArrowLeft className="w-5 h-5 mr-2" />
         Back to Home
       </Link>
@@ -62,8 +86,8 @@ const UserRegistration = () => {
               {isLogin ? "User Login" : "User Registration"}
             </h1>
             <p className="text-gray-600">
-              {isLogin 
-                ? "Welcome back! Please login to your account" 
+              {isLogin
+                ? "Welcome back! Please login to your account"
                 : "Join our community to help save lives and support humanitarian efforts"}
             </p>
           </div>
@@ -120,7 +144,10 @@ const UserRegistration = () => {
             ) : (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-700 font-medium">
+                  <Label
+                    htmlFor="password"
+                    className="text-gray-700 font-medium"
+                  >
                     Password <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -135,7 +162,10 @@ const UserRegistration = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="retypePassword" className="text-gray-700 font-medium">
+                  <Label
+                    htmlFor="retypePassword"
+                    className="text-gray-700 font-medium"
+                  >
                     Retype Password <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -187,7 +217,9 @@ const UserRegistration = () => {
                 }}
                 className="text-green-600 hover:text-green-700 font-medium transition-colors"
               >
-                {isLogin ? "Don't have an account? Register" : "Already have an account? Log In"}
+                {isLogin
+                  ? "Don't have an account? Register"
+                  : "Already have an account? Log In"}
               </button>
             </div>
           </form>
@@ -197,4 +229,4 @@ const UserRegistration = () => {
   );
 };
 
-export default UserRegistration; 
+export default UserRegistration;
