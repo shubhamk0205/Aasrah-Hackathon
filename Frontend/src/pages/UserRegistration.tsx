@@ -75,7 +75,7 @@ const UserRegistration = () => {
       // Navigate after successful login/registration
       setTimeout(() => {
         navigate("/dashboard");
-      }, 2000);
+      }, 1000);
     } catch (error) {
       dispatch(loginFailure(error instanceof Error ? error.message : "An error occurred"));
       toast({
@@ -246,6 +246,7 @@ const UserRegistration = () => {
         </motion.div>
       </div>
     </div>
+    
   );
 };
 
