@@ -239,8 +239,19 @@ const Report = () => {
                       onClick={handleFetchLocation}
                       variant="outline"
                       className="px-3"
+                      disabled={isLocating}
                     >
-                      <MapPin className="w-4 h-4" />
+                      {isLocating ? (
+                        <>
+                          <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></span>
+                          Fetching...
+                        </>
+                      ) : (
+                        <>
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Fetch location
+                        </>
+                      )}
                     </Button>
                   </div>
                   <p className="text-sm text-gray-500">
@@ -248,19 +259,21 @@ const Report = () => {
                   </p>
                 </div>
 
-                <div className="w-full flex justify-center mt-2 mb-2">
-                  <div className="w-full max-w-2xl rounded-xl overflow-hidden border border-gray-300 shadow-md bg-white relative">
-                    {isLoading && (
-                      <div className="flex items-center justify-center h-[350px] w-full bg-gray-50 absolute z-10 bg-opacity-80">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                      </div>
-                    )}
-                    <div
-                      ref={mapContainerRef}
-                      style={{ height: 350, width: "100%" }}
-                    />
+                {position && (
+                  <div className="w-full flex justify-center mt-2 mb-2">
+                    <div className="w-full max-w-2xl rounded-xl overflow-hidden border border-gray-300 shadow-md bg-white relative">
+                      {isLoading && (
+                        <div className="flex items-center justify-center h-[350px] w-full bg-gray-50 absolute z-10 bg-opacity-80">
+                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                        </div>
+                      )}
+                      <div
+                        ref={mapContainerRef}
+                        style={{ height: 350, width: "100%" }}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <Button 
                   type="submit" 
