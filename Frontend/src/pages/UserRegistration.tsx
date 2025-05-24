@@ -56,6 +56,8 @@ const UserRegistration = () => {
     }
   };
 
+  // Conifiguring firebase for login and signup users
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 px-4 py-8">
       {/* Back Button */}
