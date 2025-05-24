@@ -45,6 +45,7 @@ const Report = () => {
   const [address, setAddress] = useState("");
   const [coords, setCoords] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
 
   // Initialize map
   useEffect(() => {
@@ -111,9 +112,14 @@ const Report = () => {
   // Use My Location
   const handleFetchLocation = () => {
     if (!navigator.geolocation) return;
+    setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setPosition([pos.coords.latitude, pos.coords.longitude]);
+        setIsLocating(false);
+      },
+      () => {
+        setIsLocating(false);
       }
     );
   };
@@ -157,6 +163,14 @@ const Report = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 py-12 px-4">
+      {isLocating && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-80">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-4"></div>
+            <div className="text-lg font-semibold text-blue-700">Fetching your location...</div>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto max-w-2xl">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
