@@ -7,82 +7,59 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { db, auth } from "@/database/FirebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+const GEOAPIFY_API_KEY = "dcaea7ec4f5a47be8900cd8c7b627153";
+
+async function reverseGeocode(lat: number, lon: number): Promise<string> {
+  try {
+    const response = await fetch(
+      `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${GEOAPIFY_API_KEY}`
+    );
+    const data = await response.json();
+    if (data.features && data.features.length > 0) {
+      return data.features[0].properties.formatted || "Unknown location";
+    }
+    return "Unknown location";
+  } catch {
+    return "Unknown location";
+  }
+}
 
 const Report = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [reportData, setReportData] = useState({
     description: "",
     location: "",
     image: null as File | null
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        console.log("No user logged in during report submission");
-        toast({
-          title: "Authentication Error",
-          description: "Please log in to submit a report.",
-          variant: "destructive",
-        });
-        navigate("/user-registration");
-        return;
-      }
-
-      console.log("Submitting report for user:", currentUser.email);
-
-      let imageUrl = null;
-      if (reportData.image) {
-        console.log("Uploading image...");
-        const storage = getStorage();
-        const imageRef = ref(storage, `report-images/${Date.now()}_${reportData.image.name}`);
-        await uploadBytes(imageRef, reportData.image);
-        imageUrl = await getDownloadURL(imageRef);
-        console.log("Image uploaded successfully:", imageUrl);
-      }
-
-      const newReport = {
-        description: reportData.description,
-        location: reportData.location,
-        image: imageUrl,
-        date: new Date().toISOString(),
-        status: "Submitted",
-        userId: currentUser.uid,
-        userEmail: currentUser.email,
-        createdAt: new Date(),
-      };
-
-      console.log("Saving report to Firestore:", newReport);
-      const docRef = await addDoc(collection(db, "reports"), newReport);
-      console.log("Report saved successfully with ID:", docRef.id);
-
-      toast({
-        title: "Report Submitted Successfully!",
-        description: "Your emergency report has been sent to nearby NGOs. Help is on the way.",
-      });
-
-      setTimeout(() => {
-        navigate("/my-reports");
-      }, 2000);
-    } catch (error) {
-      console.error("Error submitting report:", error);
-      toast({
-        title: "Error",
-        description: "Failed to submit report. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    console.log("Report Data:", reportData);
+    
+    // Store report in localStorage for demo purposes
+    const existingReports = JSON.parse(localStorage.getItem('reports') || '[]');
+    const newReport = {
+      id: Date.now(),
+      description: reportData.description,
+      location: reportData.location,
+      image: reportData.image?.name || null,
+      date: new Date().toISOString(),
+      status: "Submitted"
+    };
+    
+    existingReports.push(newReport);
+    localStorage.setItem('reports', JSON.stringify(existingReports));
+    
+    toast({
+      title: "Report Submitted Successfully!",
+      description: "Your emergency report has been sent to nearby NGOs. Help is on the way.",
+    });
+    
+    setTimeout(() => {
+      navigate("/my-reports");
+    }, 2000);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,15 +79,16 @@ const Report = () => {
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
+          const address = await reverseGeocode(latitude, longitude);
           setReportData({
             ...reportData,
-            location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+            location: address
           });
           toast({
             title: "Location Detected",
-            description: "Your current location has been added to the report.",
+            description: "Your current address has been added to the report.",
           });
         },
         (error) => {
@@ -212,16 +190,8 @@ const Report = () => {
                 <Button 
                   type="submit" 
                   className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 text-lg font-semibold"
-                  disabled={isSubmitting}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit Emergency Report"
-                  )}
+                  Submit Emergency Report
                 </Button>
               </form>
             </CardContent>
