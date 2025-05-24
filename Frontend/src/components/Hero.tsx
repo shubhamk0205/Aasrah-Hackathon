@@ -10,21 +10,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-orange-500/10" />
       
       <div className="container mx-auto max-w-6xl relative z-10">
-        {/* Logo Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="flex justify-center -mt-32"
-        >
-          <img
-            src="/logo_full.png"
-            alt="Aasrah Full Logo"
-            className="h-40 md:h-48 lg:h-56 w-auto object-contain"
-          />
-        </motion.div>
-
-        <div className="grid lg:grid-cols-2 gap-12 items-center mt-16">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -97,22 +83,23 @@ const Hero = () => {
             className="relative"
           >
             <div className="relative w-full h-96 bg-gradient-to-br from-blue-100 to-orange-100 rounded-3xl flex items-center justify-center overflow-hidden">
-              {/* Emergency Icon */}
+              {/* Logo */}
               <motion.div
                 animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, -5, 0]
+                  scale: [1, 1.05, 1],
                 }}
                 transition={{ 
                   duration: 3,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative z-10"
+                className="relative z-10 flex items-center justify-center w-full h-full pl-8"
               >
-                <div className="w-32 h-32 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-2xl">
-                  <MapPin className="w-16 h-16 text-white" />
-                </div>
+                <img
+                  src="/logo_full.png"
+                  alt="Aasrah Full Logo"
+                  className="h-64 w-auto object-contain transform-none"
+                />
               </motion.div>
               
               {/* Floating Elements */}
