@@ -1,7 +1,7 @@
-
 import { motion } from "framer-motion";
 import { Bell, MapPin, Calendar, Heart, Shield, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const features = [
   {
@@ -93,10 +93,12 @@ const Features = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <Button size="lg" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-            <Phone className="w-5 h-5 mr-2" />
-            Start Reporting Now
-          </Button>
+          <Link to="/user-registration">
+            <Button size="lg" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+              <Phone className="w-5 h-5 mr-2" />
+              Start Reporting Now
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

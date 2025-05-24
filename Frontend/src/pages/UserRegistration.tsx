@@ -1,0 +1,141 @@
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { UserPlus, ArrowLeft, LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+
+const UserRegistration = () => {
+  const [isLogin, setIsLogin] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 px-4 py-8">
+      {/* Back Button */}
+      <Link to="/" className="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-8 transition-colors">
+        <ArrowLeft className="w-5 h-5 mr-2" />
+        Back to Home
+      </Link>
+
+      <div className="container mx-auto max-w-lg">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-2xl shadow-xl p-8"
+        >
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              {isLogin ? (
+                <LogIn className="w-10 h-10 text-white" />
+              ) : (
+                <UserPlus className="w-10 h-10 text-white" />
+              )}
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {isLogin ? "User Login" : "User Registration"}
+            </h1>
+            <p className="text-gray-600">
+              {isLogin 
+                ? "Welcome back! Please login to your account" 
+                : "Join our community to help save lives and support humanitarian efforts"}
+            </p>
+          </div>
+
+          {/* Registration/Login Form */}
+          <form className="space-y-6">
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-gray-700 font-medium">
+                  Full Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  placeholder="Enter your full name"
+                  className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  required
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-700 font-medium">
+                Email Address <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your.email@example.com"
+                className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                required
+              />
+            </div>
+
+            {isLogin ? (
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-gray-700 font-medium">
+                  Password <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  required
+                />
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-gray-700 font-medium">
+                    Phone Number <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+1 (555) 123-4567"
+                    className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="emergency" className="text-gray-700 font-medium">
+                    Emergency Contact
+                  </Label>
+                  <Input
+                    id="emergency"
+                    type="tel"
+                    placeholder="Emergency contact number"
+                    className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  />
+                </div>
+              </>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              {isLogin ? "Log In" : "Register Now"}
+            </Button>
+
+            <div className="text-center mt-6">
+              <button
+                type="button"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-green-600 hover:text-green-700 font-medium transition-colors"
+              >
+                {isLogin ? "Don't have an account? Register" : "Already have an account? Log In"}
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default UserRegistration; 

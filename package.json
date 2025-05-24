@@ -1,0 +1,13 @@
+{
+  "name": "aasrah-hackathon",
+  "version": "1.0.0",
+  "description": "Emergency Response Platform",
+  "scripts": {
+    "frontend:dev": "cd Frontend && npm run dev",
+    "frontend:build": "cd Frontend && npm run build",
+    "frontend:preview": "cd Frontend && npm run preview",
+    "frontend:install": "cd Frontend && npm install"
+  },
+  "author": "",
+  "license": "ISC"
+} 
