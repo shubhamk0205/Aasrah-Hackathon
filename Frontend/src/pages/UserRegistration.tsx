@@ -8,6 +8,8 @@ import { useState, FormEvent, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginStart, loginSuccess, loginFailure } from "@/store/slices/userSlice";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../database/FirebaseConfig";
 
 const UserRegistration = () => {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ const UserRegistration = () => {
     try {
       if (isLogin) {
         // Handle login logic
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
         console.log("Login with:", { email, password });
         // For demo purposes, always allow login
         dispatch(loginSuccess({
@@ -57,7 +60,7 @@ const UserRegistration = () => {
           });
           return;
         }
-        // Handle registration logic
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log("Register with:", { fullName, email, password, phone });
         dispatch(loginSuccess({
           fullName,
