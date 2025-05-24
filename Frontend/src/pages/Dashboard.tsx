@@ -19,7 +19,7 @@ const Dashboard = () => {
             Welcome, User! 👋
           </h1>
           <p className="text-xl text-gray-600">
-            Your NGO Dashboard - Manage emergencies, track donations, and make a difference
+            Your Dashboard - Manage emergencies, track donations, and make a difference
           </p>
         </motion.div>
 

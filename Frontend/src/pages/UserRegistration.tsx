@@ -1,12 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserPlus, ArrowLeft, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, FormEvent } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const UserRegistration = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(false);
   
   // Form state variables
@@ -21,14 +24,35 @@ const UserRegistration = () => {
     if (isLogin) {
       // Handle login logic
       console.log("Login with:", { email, password });
+      // For demo purposes, always allow login
+      toast({
+        title: "Login Successful!",
+        description: "Welcome back! Redirecting to dashboard...",
+      });
+      
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
     } else {
       // Validate passwords match
       if (password !== retypePassword) {
-        alert("Passwords do not match!");
+        toast({
+          title: "Registration Failed",
+          description: "Passwords do not match!",
+          variant: "destructive",
+        });
         return;
       }
       // Handle registration logic
       console.log("Register with:", { fullName, email, password, phone });
+      toast({
+        title: "Registration Successful!",
+        description: "Welcome to our platform! Redirecting to dashboard...",
+      });
+      
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
     }
   };
 
