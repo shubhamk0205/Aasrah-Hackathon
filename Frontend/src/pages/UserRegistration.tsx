@@ -15,7 +15,7 @@ const UserRegistration = () => {
   const dispatch = useAppDispatch();
   const { loading, error, isAuthenticated, currentUser } = useAppSelector((state) => state.user);
   const [isLogin, setIsLogin] = useState(false);
-  
+
   // Form state variables
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -89,7 +89,10 @@ const UserRegistration = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 px-4 py-8">
       {/* Back Button */}
-      <Link to="/" className="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-8 transition-colors">
+      <Link
+        to="/"
+        className="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-8 transition-colors"
+      >
         <ArrowLeft className="w-5 h-5 mr-2" />
         Back to Home
       </Link>
@@ -114,8 +117,8 @@ const UserRegistration = () => {
               {isLogin ? "User Login" : "User Registration"}
             </h1>
             <p className="text-gray-600">
-              {isLogin 
-                ? "Welcome back! Please login to your account" 
+              {isLogin
+                ? "Welcome back! Please login to your account"
                 : "Join our community to help save lives and support humanitarian efforts"}
             </p>
           </div>
@@ -172,7 +175,10 @@ const UserRegistration = () => {
             {!isLogin && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="retypePassword" className="text-gray-700 font-medium">
+                  <Label
+                    htmlFor="retypePassword"
+                    className="text-gray-700 font-medium"
+                  >
                     Retype Password <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -231,7 +237,9 @@ const UserRegistration = () => {
                 }}
                 className="text-green-600 hover:text-green-700 font-medium transition-colors"
               >
-                {isLogin ? "Don't have an account? Register" : "Already have an account? Log In"}
+                {isLogin
+                  ? "Don't have an account? Register"
+                  : "Already have an account? Log In"}
               </button>
             </div>
           </form>
@@ -241,4 +249,4 @@ const UserRegistration = () => {
   );
 };
 
-export default UserRegistration; 
+export default UserRegistration;
