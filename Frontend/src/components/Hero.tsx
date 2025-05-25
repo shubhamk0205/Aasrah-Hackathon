@@ -12,7 +12,7 @@ const Hero = () => {
       {/* Login Button */}
       <div className="absolute top-8 right-8 z-20">
         <Link to="/login">
-          <Button className="bg-white/90 text-gray-900 shadow-lg transition-all duration-300 hover:bg-blue-100 hover:text-blue-700 hover:shadow-xl">
+          <Button className="bg-white/90 hover:bg-white text-gray-900 shadow-lg hover:shadow-xl transition-all duration-300">
             <LogIn className="w-4 h-4 mr-2" />
             Log In
           </Button>
