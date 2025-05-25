@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Camera, MapPin, FileText } from "lucide-react";
+import { AlertTriangle, MapPin, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,7 +35,7 @@ const Report = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     description: "",
-    image: null,
+    animalType: "",
     location: "",
   });
   const [position, setPosition] = useState(DEFAULT_POSITION);
@@ -131,8 +131,8 @@ const Report = () => {
     const newReport = {
       id: Date.now(),
       description: formData.description,
+      animalType: formData.animalType,
       location: formData.location,
-      image: formData.image?.name || null,
       date: new Date().toISOString(),
       status: "Submitted"
     };
@@ -148,17 +148,10 @@ const Report = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.type === 'file') {
-      setFormData({
-        ...formData,
-        image: e.target.files?.[0] || null
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [e.target.name]: e.target.value
-      });
-    }
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   return (
@@ -190,9 +183,25 @@ const Report = () => {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
+                  <Label htmlFor="animalType" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Type of Animal <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="animalType"
+                    name="animalType"
+                    value={formData.animalType}
+                    onChange={handleChange}
+                    placeholder="What type of animal is it?"
+                    required
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="description" className="flex items-center gap-2">
                     <FileText className="w-4 h-4" />
-                    Emergency Description *
+                    Emergency Description <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="description"
@@ -204,25 +213,10 @@ const Report = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="image" className="flex items-center gap-2">
-                    <Camera className="w-4 h-4" />
-                    Upload Image (Optional)
-                  </Label>
-                  <Input
-                    id="image"
-                    name="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleChange}
-                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  />
-                </div>
-
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="location" className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    Location *
+                    Location <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex gap-2">
                     <Input
