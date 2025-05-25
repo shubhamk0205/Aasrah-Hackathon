@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MapPin, Heart, Phone } from "lucide-react";
+import { MapPin, Heart, Phone, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -8,6 +8,16 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-orange-500/10" />
+      
+      {/* Login Button */}
+      <div className="absolute top-8 right-8 z-20">
+        <Link to="/login">
+          <Button className="bg-white/90 hover:bg-white text-gray-900 shadow-lg hover:shadow-xl transition-all duration-300">
+            <LogIn className="w-4 h-4 mr-2" />
+            Log In
+          </Button>
+        </Link>
+      </div>
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">

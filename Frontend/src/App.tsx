@@ -14,6 +14,7 @@ import MyReports from "./pages/MyReports";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import KnowMore from "./pages/KnowMore";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/my-reports" element={<MyReports />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/know-more" element={<KnowMore />} />
+          <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />

@@ -92,7 +92,7 @@ const Index = () => {
                   </div>
                   <CardTitle className="text-2xl font-bold text-gray-900">User Registration</CardTitle>
                   <CardDescription className="text-gray-600">
-                    Sign up to receive alerts, report emergencies, and support humanitarian efforts
+                    Sign up to receive alerts, report emergencies, and support efforts
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">

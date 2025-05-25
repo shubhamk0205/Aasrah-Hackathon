@@ -1,14 +1,14 @@
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { UserPlus, ArrowLeft, LogIn } from "lucide-react";
+import { UserPlus, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginStart, loginSuccess, loginFailure } from "@/store/slices/userSlice";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../database/FirebaseConfig";
 
 const UserRegistration = () => {
@@ -16,7 +16,6 @@ const UserRegistration = () => {
   const { toast } = useToast();
   const dispatch = useAppDispatch();
   const { loading, error, isAuthenticated, currentUser } = useAppSelector((state) => state.user);
-  const [isLogin, setIsLogin] = useState(false);
 
   // Form state variables
   const [fullName, setFullName] = useState("");
@@ -35,47 +34,31 @@ const UserRegistration = () => {
     dispatch(loginStart());
 
     try {
-      if (isLogin) {
-        // Handle login logic
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        console.log("Login with:", { email, password });
-        // For demo purposes, always allow login
-        dispatch(loginSuccess({
-          email,
-          role: 'user'
-        }));
-        
+      // Validate passwords match
+      if (password !== retypePassword) {
+        dispatch(loginFailure("Passwords do not match!"));
         toast({
-          title: "Login Successful!",
-          description: "Welcome back! Redirecting to dashboard...",
+          title: "Registration Failed",
+          description: "Passwords do not match!",
+          variant: "destructive",
         });
-      } else {
-        // Validate passwords match
-        if (password !== retypePassword) {
-          dispatch(loginFailure("Passwords do not match!"));
-          toast({
-            title: "Registration Failed",
-            description: "Passwords do not match!",
-            variant: "destructive",
-          });
-          return;
-        }
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        console.log("Register with:", { fullName, email, password, phone });
-        dispatch(loginSuccess({
-          fullName,
-          email,
-          phone,
-          role: 'user'
-        }));
-        
-        toast({
-          title: "Registration Successful!",
-          description: "Welcome to our platform! Redirecting to dashboard...",
-        });
+        return;
       }
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("Register with:", { fullName, email, password, phone });
+      dispatch(loginSuccess({
+        fullName,
+        email,
+        phone,
+        role: 'user'
+      }));
       
-      // Navigate after successful login/registration
+      toast({
+        title: "Registration Successful!",
+        description: "Welcome to our platform! Redirecting to dashboard...",
+      });
+      
+      // Navigate after successful registration
       setTimeout(() => {
         navigate("/dashboard");
       }, 1000);
@@ -110,40 +93,32 @@ const UserRegistration = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              {isLogin ? (
-                <LogIn className="w-10 h-10 text-white" />
-              ) : (
-                <UserPlus className="w-10 h-10 text-white" />
-              )}
+              <UserPlus className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {isLogin ? "User Login" : "User Registration"}
+              User Registration
             </h1>
             <p className="text-gray-600">
-              {isLogin
-                ? "Welcome back! Please login to your account"
-                : "Join our community to help save lives and support humanitarian efforts"}
+              Join our community to help save lives and support humanitarian efforts
             </p>
           </div>
 
-          {/* Registration/Login Form */}
+          {/* Registration Form */}
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-gray-700 font-medium">
-                  Full Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="Enter your full name"
-                  className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="fullName" className="text-gray-700 font-medium">
+                Full Name <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="fullName"
+                type="text"
+                placeholder="Enter your full name"
+                className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-700 font-medium">
@@ -167,7 +142,7 @@ const UserRegistration = () => {
               <Input
                 id="password"
                 type="password"
-                placeholder={isLogin ? "Enter your password" : "Create your password"}
+                placeholder="Create your password"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
                 required
                 value={password}
@@ -175,49 +150,45 @@ const UserRegistration = () => {
               />
             </div>
 
-            {!isLogin && (
-              <>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="retypePassword"
-                    className="text-gray-700 font-medium"
-                  >
-                    Retype Password <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="retypePassword"
-                    type="password"
-                    placeholder="Retype your password"
-                    className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                    required
-                    value={retypePassword}
-                    onChange={(e) => setRetypePassword(e.target.value)}
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="retypePassword"
+                className="text-gray-700 font-medium"
+              >
+                Retype Password <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="retypePassword"
+                type="password"
+                placeholder="Retype your password"
+                className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                required
+                value={retypePassword}
+                onChange={(e) => setRetypePassword(e.target.value)}
+              />
+            </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-gray-700 font-medium">
-                    Phone Number <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="+1 (555) 123-4567"
-                    className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-gray-700 font-medium">
+                Phone Number <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+1 (555) 123-4567"
+                className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
 
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               disabled={loading}
             >
-              {loading ? "Processing..." : (isLogin ? "Log In" : "Register Now")}
+              {loading ? "Processing..." : "Register Now"}
             </Button>
 
             {error && (
@@ -225,31 +196,10 @@ const UserRegistration = () => {
                 {error}
               </div>
             )}
-
-            <div className="text-center mt-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  // Reset form fields when switching between login and register
-                  setFullName("");
-                  setEmail("");
-                  setPassword("");
-                  setRetypePassword("");
-                  setPhone("");
-                }}
-                className="text-green-600 hover:text-green-700 font-medium transition-colors"
-              >
-                {isLogin
-                  ? "Don't have an account? Register"
-                  : "Already have an account? Log In"}
-              </button>
-            </div>
           </form>
         </motion.div>
       </div>
     </div>
-    
   );
 };
 
