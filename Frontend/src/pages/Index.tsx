@@ -11,11 +11,14 @@ import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
-      <Hero />
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative">
+        <Hero />
+      </section>
       
       {/* Main Action Cards Section */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-gradient-to-b from-white to-blue-50/30">
         <div className="container mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -171,10 +174,25 @@ const Index = () => {
         </div>
       </section>
 
-      <HowItWorks />
-      <Features />
-      <Partners />
-      <Footer />
+      {/* How It Works Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-blue-50/30 to-white">
+        <HowItWorks />
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-white to-orange-50/30">
+        <Features />
+      </section>
+
+      {/* Partners Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-orange-50/30 to-white">
+        <Partners />
+      </section>
+
+      {/* Footer Section */}
+      <section className="bg-gradient-to-b from-white to-gray-50">
+        <Footer />
+      </section>
     </div>
   );
 };
