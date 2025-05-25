@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { db, storage, auth } from "@/database/FirebaseConfig";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const GEOAPIFY_API_KEY = "dcaea7ec4f5a47be8900cd8c7b627153";
 
@@ -124,27 +126,37 @@ const Report = () => {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Store report in localStorage for demo purposes
-    const existingReports = JSON.parse(localStorage.getItem('reports') || '[]');
-    const newReport = {
-      id: Date.now(),
-      description: formData.description,
-      animalType: formData.animalType,
-      location: formData.location,
-      date: new Date().toISOString(),
-      status: "Submitted"
-    };
-    existingReports.push(newReport);
-    localStorage.setItem('reports', JSON.stringify(existingReports));
-    toast({
-      title: "Report Submitted Successfully!",
-      description: "Your emergency report has been sent to nearby NGOs. Help is on the way.",
-    });
-    setTimeout(() => {
-      navigate("/my-reports");
-    }, 2000);
+    try {
+      const user = auth.currentUser;
+      const reportData = {
+        description: formData.description,
+        animalType: formData.animalType,
+        location: formData.location,
+        coordinates: coords ? { lat: coords[0], lng: coords[1] } : null,
+        userId: user ? user.uid : null,
+        userEmail: user ? user.email : null,
+        createdAt: serverTimestamp(),
+        status: "Submitted"
+      };
+      console.log("Report data to be stored:", reportData);
+      await addDoc(collection(db, "reports"), reportData);
+      toast({
+        title: "Report Submitted Successfully!",
+        description: "Your emergency report has been sent to nearby NGOs. Help is on the way.",
+      });
+      setFormData({ description: "", animalType: "", location: "" });
+      setTimeout(() => {
+        navigate("/my-reports");
+      }, 2000);
+    } catch (error) {
+      toast({
+        title: "Error submitting report",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
