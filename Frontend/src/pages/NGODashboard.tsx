@@ -1,36 +1,36 @@
 import { motion } from "framer-motion";
-import { 
-  CheckCircle2, 
-  XCircle, 
-  DollarSign, 
-  ClipboardCheck, 
-  Users, 
+import {
+  CheckCircle2,
+  XCircle,
+  DollarSign,
+  ClipboardCheck,
+  Users,
   TrendingUp,
   AlertTriangle,
   Clock,
   CheckCircle,
-  LogOut
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../database/FirebaseConfig";
 
 // Static data for reports
 const reportsData = {
   new: [
-    { id: "REP001", category: "Animal Medical Emergency", date: "2024-03-20" },
-    { id: "REP002", category: "Animal Rescue", date: "2024-03-20" },
-    { id: "REP003", category: "Animal Healthcare", date: "2024-03-19" },
+    { id: "REP001", category: "Stray Animal Feeding", date: "2024-03-20" },
+    { id: "REP002", category: "Injured Animal Report", date: "2024-03-20" },
   ],
   inProgress: [
-    { id: "REP004", category: "Animal Medical Emergency", date: "2024-03-18" },
-    { id: "REP005", category: "Animal Rescue", date: "2024-03-17" },
+    { id: "REP004", category: "Animal Cruelty Investigation", date: "2024-03-18" },
+    { id: "REP005", category: "Wildlife Rescue in Progress", date: "2024-03-17" },
+    { id: "REP006", category: "Vaccination Drive Scheduled", date: "2024-03-16" },
   ],
   completed: [
-    { id: "REP006", category: "Animal Medical Emergency", date: "2024-03-15" },
-    { id: "REP007", category: "Animal Healthcare", date: "2024-03-14" },
-    { id: "REP008", category: "Animal Rescue", date: "2024-03-13" },
+    { id: "REP007", category: "Animal Shelter Construction", date: "2024-03-15" },
+    { id: "REP008", category: "Adoption Camp Successful", date: "2024-03-14" },
+    { id: "REP009", category: "Sterilization Program Completed", date: "2024-03-13" },
   ],
 };
 
@@ -57,44 +57,40 @@ const NGODashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 py-12 px-4">
       <div className="container mx-auto max-w-7xl">
         {/* Header with Logout Button */}
-        <div className="relative mb-12">
-          {/* Logout Button */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="absolute top-0 right-0"
-          >
-            <Button
-              onClick={handleLogout}
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-2 text-gray-600 hover:text-red-500 hover:bg-red-50"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </Button>
-          </motion.div>
-
+        <div className="flex justify-between items-center mb-12">
           {/* Centered Header Content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center"
+            className="text-left"
           >
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Users className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Hello Heroes!!
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+              Hello Saviours ! 👋
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-700">
               Your dedication saves lives every day
             </p>
+          </motion.div>
+
+          {/* Logout Button */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 text-blue-700 hover:text-red-600 hover:bg-red-50"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
           </motion.div>
         </div>
 
@@ -106,14 +102,12 @@ const NGODashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Card className="h-full border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-xl">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5 text-red-600" />
+            <Card className="h-full border border-red-300 hover:border-red-500 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+                    <AlertTriangle className="w-8 h-8 text-white" />
                   </div>
                   <CardTitle className="text-xl font-bold text-gray-900">New Reports</CardTitle>
-                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {reportsData.new.map((report) => (
@@ -121,19 +115,19 @@ const NGODashboard = () => {
                     key={report.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-blue-50 rounded-lg border border-blue-100"
+                    className="p-4 bg-red-50 rounded-lg border border-red-200"
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <p className="font-medium text-gray-900">{report.id}</p>
-                        <p className="text-sm text-gray-600">{report.category}</p>
+                        <p className="text-sm text-gray-700">{report.category}</p>
                       </div>
-                      <p className="text-sm text-gray-500">{report.date}</p>
+                      <p className="text-sm text-gray-600">{report.date}</p>
                     </div>
                     <div className="flex gap-2 mt-3">
                       <Button
                         size="sm"
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                        className="bg-green-600 hover:bg-green-700 text-white"
                         onClick={() => handleAccept(report.id)}
                       >
                         <CheckCircle2 className="w-4 h-4 mr-1" />
@@ -160,14 +154,12 @@ const NGODashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Card className="h-full border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-xl">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-yellow-600" />
+            <Card className="h-full border border-yellow-300 hover:border-yellow-500 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+                    <Clock className="w-8 h-8 text-white" />
                   </div>
                   <CardTitle className="text-xl font-bold text-gray-900">In Progress</CardTitle>
-                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {reportsData.inProgress.map((report) => (
@@ -175,14 +167,14 @@ const NGODashboard = () => {
                     key={report.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-blue-50 rounded-lg border border-blue-100"
+                    className="p-4 bg-yellow-50 rounded-lg border border-yellow-200"
                   >
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-medium text-gray-900">{report.id}</p>
-                        <p className="text-sm text-gray-600">{report.category}</p>
+                        <p className="text-sm text-gray-700">{report.category}</p>
                       </div>
-                      <p className="text-sm text-gray-500">{report.date}</p>
+                      <p className="text-sm text-gray-600">{report.date}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -196,14 +188,12 @@ const NGODashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <Card className="h-full border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-xl">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+            <Card className="h-full border border-green-300 hover:border-green-500 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+                    <CheckCircle className="w-8 h-8 text-white" />
                   </div>
                   <CardTitle className="text-xl font-bold text-gray-900">Completed</CardTitle>
-                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {reportsData.completed.map((report) => (
@@ -211,14 +201,14 @@ const NGODashboard = () => {
                     key={report.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-blue-50 rounded-lg border border-blue-100"
+                    className="p-4 bg-green-50 rounded-lg border border-green-200"
                   >
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-medium text-gray-900">{report.id}</p>
-                        <p className="text-sm text-gray-600">{report.category}</p>
+                        <p className="text-sm text-gray-700">{report.category}</p>
                       </div>
-                      <p className="text-sm text-gray-500">{report.date}</p>
+                      <p className="text-sm text-gray-600">{report.date}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -228,21 +218,21 @@ const NGODashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <Card className="border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-xl">
+            <Card className="border border-blue-300 hover:border-blue-500 transition-all duration-300 hover:shadow-lg">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Donations Received</CardTitle>
-                <DollarSign className="h-4 w-4 text-blue-500" />
+                <CardTitle className="text-sm font-medium text-blue-800">Total Donations Received</CardTitle>
+                <DollarSign className="h-5 w-5 text-blue-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">₹25,000</div>
-                <p className="text-xs text-blue-600 flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3" />
+                <div className="text-3xl font-bold text-gray-900">₹25,000</div>
+                <p className="text-sm text-gray-600 flex items-center gap-1">
+                  <TrendingUp className="h-4 w-4 text-green-500" />
                   +15% from last month
                 </p>
               </CardContent>
@@ -254,17 +244,92 @@ const NGODashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <Card className="border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-xl">
+            <Card className="border border-blue-300 hover:border-blue-500 transition-all duration-300 hover:shadow-lg">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Reports Completed</CardTitle>
-                <ClipboardCheck className="h-4 w-4 text-blue-500" />
+                <CardTitle className="text-sm font-medium text-blue-800">Total Reports Completed</CardTitle>
+                <ClipboardCheck className="h-5 w-5 text-blue-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">156</div>
-                <p className="text-xs text-blue-600 flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3" />
+                <div className="text-3xl font-bold text-gray-900">156</div>
+                <p className="text-sm text-gray-600 flex items-center gap-1">
+                  <TrendingUp className="h-4 w-4 text-green-500" />
                   +8% from last month
                 </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* NGO Action Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Reported Issue Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
+            <Card className="h-full border border-red-200 hover:border-red-400 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+                  <AlertTriangle className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900">Reported Issue</CardTitle>
+                <CardDescription className="text-gray-600">
+                  View and manage reported incidents and emergencies
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3">
+                  View Issues
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Donation Received Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            <Card className="h-full border border-green-200 hover:border-green-400 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+                  <DollarSign className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900">Donation Received</CardTitle>
+                <CardDescription className="text-gray-600">
+                  Track and manage donations received by your organization
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3">
+                   View Donations
+                 </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* See the Management Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+          >
+            <Card className="h-full border border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+                  <ClipboardCheck className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900">Manage Organization</CardTitle>
+                <CardDescription className="text-gray-600">
+                  Access tools for managing your NGO's profile and settings
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3">
+                  Manage
+                </Button>
               </CardContent>
             </Card>
           </motion.div>
