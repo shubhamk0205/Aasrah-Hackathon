@@ -142,7 +142,10 @@ const Report = () => {
     try {
       // Check if user is logged in
       const user = auth.currentUser;
+      console.log("Current user:", user ? { uid: user.uid, email: user.email } : "No user");
+      
       if (!user) {
+        console.error("No user logged in");
         toast({
           title: "Authentication Required",
           description: "Please log in to submit a report",
@@ -161,13 +164,15 @@ const Report = () => {
         userId: user.uid,
         userEmail: user.email,
         createdAt: new Date().toISOString(),
-        status: "Submitted"
+        status: "Submitted",
+        date: new Date().toISOString() // Adding date field for consistency
       };
 
-      console.log("Submitting report:", reportData);
+      console.log("Preparing to submit report with data:", reportData);
 
       // Add to Firestore
       const reportsRef = collection(db, "reports");
+      console.log("Adding document to collection: reports");
       const docRef = await addDoc(reportsRef, reportData);
       
       if (docRef.id) {
