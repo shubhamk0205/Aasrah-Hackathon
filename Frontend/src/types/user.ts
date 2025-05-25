@@ -3,7 +3,7 @@ export interface User {
   fullName?: string;
   email: string;
   phone?: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'ngo';
 }
 
 export interface UserState {

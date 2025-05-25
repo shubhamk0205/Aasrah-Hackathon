@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../database/FirebaseConfig";
 import { collection, query, where, getDocs, orderBy, doc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/userSlice";
 
 interface Report {
   id: string;
@@ -44,6 +46,8 @@ const NGODashboard = () => {
   const prevNewReports = useRef<Report[]>([]);
   const prevInProgressReports = useRef<Report[]>([]);
   const prevCompletedReports = useRef<Report[]>([]);
+
+  const dispatch = useAppDispatch();
 
   // Function to check if reports have changed
   const haveReportsChanged = (oldReports: Report[], newReports: Report[]) => {
@@ -201,9 +205,21 @@ const NGODashboard = () => {
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      navigate("/");
+      dispatch(logout());
+      toast({
+        title: "Logged Out Successfully",
+        description: "You have been logged out. Redirecting...",
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (error) {
       console.error("Error signing out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 

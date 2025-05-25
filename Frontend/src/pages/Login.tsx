@@ -40,7 +40,7 @@ const Login = () => {
       
       dispatch(loginSuccess({
         email,
-        role: role === 'ngo' ? 'user' : role // Convert 'ngo' to 'user' for Redux store compatibility
+        role
       }));
       
       toast({
