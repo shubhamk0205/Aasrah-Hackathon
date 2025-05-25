@@ -356,6 +356,11 @@ const NGODashboard = () => {
                       className="p-4 bg-red-50 rounded-lg border border-red-200"
                     >
                       <div className="flex flex-col gap-2">
+                        <div className="text-center mb-2">
+                          <span className="text-lg font-bold text-red-800">
+                            Report #{typeof report.id === 'number' ? report.id : Date.now()}
+                          </span>
+                        </div>
                         <div className="flex justify-between items-start">
                           <div>
                             <p className="font-medium text-gray-900">{report.animalType}</p>
@@ -419,6 +424,11 @@ const NGODashboard = () => {
                       className="p-4 bg-yellow-50 rounded-lg border border-yellow-200"
                     >
                       <div className="flex flex-col gap-2">
+                        <div className="text-center mb-2">
+                          <span className="text-lg font-bold text-yellow-800">
+                            Report #{typeof report.id === 'number' ? report.id : Date.now()}
+                          </span>
+                        </div>
                         <div>
                           <p className="font-medium text-gray-900">{report.animalType}</p>
                           <p className="text-sm text-gray-700">{report.description}</p>
@@ -473,6 +483,11 @@ const NGODashboard = () => {
                       className="p-4 bg-green-50 rounded-lg border border-green-200"
                     >
                       <div className="flex flex-col gap-2">
+                        <div className="text-center mb-2">
+                          <span className="text-lg font-bold text-green-800">
+                            Report #{typeof report.id === 'number' ? report.id : Date.now()}
+                          </span>
+                        </div>
                         <div>
                           <p className="font-medium text-gray-900">{report.animalType}</p>
                           <p className="text-sm text-gray-700">{report.description}</p>

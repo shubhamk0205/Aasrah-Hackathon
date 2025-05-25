@@ -157,6 +157,7 @@ const Report = () => {
 
       // Prepare complete report data
       const reportData = {
+        id: Date.now(),  // Numeric ID based on timestamp
         description: formData.description,
         animalType: formData.animalType,
         location: formData.location,
