@@ -128,32 +128,72 @@ const Report = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.description || !formData.animalType || !formData.location) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
+      // Check if user is logged in
       const user = auth.currentUser;
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to submit a report",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
+
+      // Prepare complete report data
       const reportData = {
         description: formData.description,
         animalType: formData.animalType,
         location: formData.location,
         coordinates: coords ? { lat: coords[0], lng: coords[1] } : null,
-        userId: user ? user.uid : null,
-        userEmail: user ? user.email : null,
-        createdAt: serverTimestamp(),
+        userId: user.uid,
+        userEmail: user.email,
+        createdAt: new Date().toISOString(),
         status: "Submitted"
       };
-      console.log("Report data to be stored:", reportData);
-      await addDoc(collection(db, "reports"), reportData);
-      toast({
-        title: "Report Submitted Successfully!",
-        description: "Your emergency report has been sent to nearby NGOs. Help is on the way.",
-      });
-      setFormData({ description: "", animalType: "", location: "" });
-      setTimeout(() => {
-        navigate("/my-reports");
-      }, 2000);
+
+      console.log("Submitting report:", reportData);
+
+      // Add to Firestore
+      const reportsRef = collection(db, "reports");
+      const docRef = await addDoc(reportsRef, reportData);
+      
+      if (docRef.id) {
+        console.log("Report saved successfully with ID:", docRef.id);
+        toast({
+          title: "Report Submitted Successfully!",
+          description: "Your emergency report has been sent to nearby NGOs. Help is on the way.",
+        });
+        
+        // Reset form
+        setFormData({ description: "", animalType: "", location: "" });
+        setPosition(null);
+        setAddress("");
+        
+        // Navigate after successful submission
+        setTimeout(() => {
+          navigate("/my-reports");
+        }, 2000);
+      } else {
+        throw new Error("Failed to save report");
+      }
     } catch (error) {
+      console.error("Error submitting report:", error);
       toast({
         title: "Error submitting report",
-        description: (error as Error).message,
+        description: error instanceof Error ? error.message : "Failed to submit report. Please try again.",
         variant: "destructive",
       });
     }
