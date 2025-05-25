@@ -38,11 +38,8 @@ const Hero = () => {
               Emergency Response Platform
             </motion.div>
             
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Save Lives with
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">
-                {" "}Instant Alerts
-              </span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">
+              Save Lives with Instant Alerts
             </h1>
             
             <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
