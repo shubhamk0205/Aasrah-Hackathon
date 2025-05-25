@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginStart, loginSuccess, loginFailure } from "@/store/slices/userSlice";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../database/FirebaseConfig";
+import { addDoc, setDoc } from "firebase/firestore";
 
 const UserRegistration = () => {
   const navigate = useNavigate();
@@ -46,6 +47,8 @@ const UserRegistration = () => {
       }
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("Register with:", { fullName, email, password, phone });
+
+      
       dispatch(loginSuccess({
         fullName,
         email,
@@ -58,7 +61,7 @@ const UserRegistration = () => {
         description: "Welcome to our platform! Redirecting to dashboard...",
       });
       
-      // Navigate after successful registration
+      
       setTimeout(() => {
         navigate("/dashboard");
       }, 1000);

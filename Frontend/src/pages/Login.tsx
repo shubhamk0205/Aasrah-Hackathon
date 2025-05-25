@@ -20,9 +20,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<'user' | 'ngo' | 'admin'>('user');
 
-  // If user is already authenticated, redirect to dashboard
+  // If user is already authenticated, redirect to role-specific dashboard
   if (isAuthenticated && currentUser) {
-    return <Navigate to="/dashboard" replace />;
+    const dashboardPaths = {
+      user: '/dashboard',
+      admin: '/admin-dashboard',
+      ngo: '/ngo-dashboard'
+    };
+    return <Navigate to={dashboardPaths[currentUser.role as keyof typeof dashboardPaths]} replace />;
   }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -35,7 +40,7 @@ const Login = () => {
       
       dispatch(loginSuccess({
         email,
-        role
+        role: role === 'ngo' ? 'user' : role // Convert 'ngo' to 'user' for Redux store compatibility
       }));
       
       toast({
@@ -43,9 +48,15 @@ const Login = () => {
         description: "Welcome back! Redirecting to dashboard...",
       });
       
-      // Navigate after successful login
+      // Navigate based on role
+      const dashboardPaths = {
+        user: '/dashboard',
+        admin: '/admin-dashboard',
+        ngo: '/ngo-dashboard'
+      };
+      
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate(dashboardPaths[role]);
       }, 1000);
     } catch (error) {
       dispatch(loginFailure(error instanceof Error ? error.message : "An error occurred"));
