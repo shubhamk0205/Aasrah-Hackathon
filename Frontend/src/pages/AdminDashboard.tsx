@@ -1,12 +1,62 @@
-
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, TrendingUp, Monitor, Settings } from "lucide-react";
+import { Shield, Users, FileText, TrendingUp, Monitor, Settings, LogOut } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { auth } from "../database/FirebaseConfig";
+import { useToast } from "@/hooks/use-toast";
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/userSlice";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      dispatch(logout());
+      toast({
+        title: "Logged Out Successfully",
+        description: "You have been logged out. Redirecting...",
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 py-12 px-4">
       <div className="container mx-auto max-w-6xl">
+        {/* Logout Button */}
+        <div className="flex justify-end mb-6">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 text-blue-700 hover:text-red-600 hover:bg-red-50"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
+          </motion.div>
+        </div>
+
+        {/* Header Content */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
